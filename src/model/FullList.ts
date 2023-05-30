@@ -19,14 +19,15 @@ export default class FullList implements List {
   get list(): ListItem[] {
     return this._list;
   }
-  set list(list: ListItem[]) {
-    this._list = list;
-  }
 
   load(): void {
+    // retrieve from local storage
     const storedList: string | null = localStorage.getItem("myList");
+    // checking if the content is string, its stored after stringify()
     if (typeof storedList !== "string") return;
 
+    // parsing stringified list to ListItem syntax.
+    // ListItem syntax is changed with an '_'underscore.
     const parsedList: { _id: string; _item: string; _checked: boolean }[] =
       JSON.parse(storedList);
     parsedList.forEach((itemObj) => {
@@ -39,20 +40,26 @@ export default class FullList implements List {
     });
   }
 
+  // saving list to Local Storage
   save(): void {
     localStorage.setItem("myList", JSON.stringify(this._list));
   }
 
+  // clear all list items
   clearList(): void {
-    this.list = [];
+    this._list = [];
+
+    // saving to prevent reload of old list items
     this.save();
   }
 
+  // add new item to list
   addItem(itemObj: ListItem): void {
     this._list.push(itemObj);
     this.save();
   }
 
+  // remove an item from the list
   removeItem(id: string): void {
     this._list = this._list.filter((item) => item.id !== id);
     this.save();
